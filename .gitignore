@@ -1,5 +1,9 @@
-# Object file
-*.o
-
-# Ada Library Information
-*.ali
+node_modules/
+.wrangler/
+dist/
+.dev.vars
+.dev.vars.*
+.env
+*.log
+coverage/
+.claude/settings.local.json
