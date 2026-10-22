@@ -1,21 +1,18 @@
 import type { FC } from "hono/jsx";
+import type { User } from "../../../types";
+import { formatBytes, formatDateTime, formatRupiah } from "../../../views/format";
+import { ErrorBox, FieldError, Layout } from "../../../views/Layout";
 import {
-  allowedTransitions,
   CATEGORIES,
   CATEGORY_LABELS,
-  canAttach,
-  canDelete,
-  canEdit,
   type Claim,
   type ClaimAttachment,
   type ClaimEvent,
   type ClaimStatus,
-  STATUSES,
   STATUS_LABELS,
-} from "../services/claims";
-import type { User } from "../types";
-import { formatBytes, formatDateTime, formatRupiah } from "./format";
-import { ErrorBox, FieldError, Layout } from "./Layout";
+  STATUSES,
+} from "../../domain/claim";
+import { allowedTransitions, canAttach, canDelete, canEdit } from "../../domain/policy";
 
 export const StatusBadge: FC<{ status: ClaimStatus }> = ({ status }) => (
   <span class={`badge badge-${status}`}>{STATUS_LABELS[status]}</span>
