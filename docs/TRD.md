@@ -1,6 +1,15 @@
 # TRD: Modul `src/claims` dan Plafon Klaim
 
-Status: draf, menunggu review · Tanggal: 2026-10-22 · Terkait: [PRD](PRD.md), [ARCHITECTURE](ARCHITECTURE.md), [ADR 0001](adr/0001-claims-feature-module.md)
+Status: **Bagian A selesai** (commit R0–R6 di `feat/klaim-biaya`), Bagian B belum dimulai · Tanggal: 2026-10-22 · Terkait: [PRD](PRD.md), [ARCHITECTURE](ARCHITECTURE.md), [ADR 0001](adr/0001-claims-feature-module.md)
+
+> **Penyesuaian saat implementasi Bagian A**
+> - `src/claims/index.ts` mengekspor route (`claimsApi`, `claimsWeb`) yang sudah dirangkai dengan adapter D1/R2. Indeks ini juga mengekspor **API in-process** dengan signature lama, misalnya `createClaim(db, actor, input)`, yang dipakai test. Fungsi `makeClaims(env)` tidak diperlukan.
+> - Ada entry publik kedua, `src/claims/schemas.ts` (skema + konstanta, tanpa Hono/D1), untuk `mcp/`.
+> - `interface/service.ts` menjadi titik tunggal "validasi → use case → `AppError`" untuk route dan API in-process. Route menerima `DepsFactory` dari composition root, sehingga `interface/` tidak pernah mengimpor `infrastructure/`.
+> - `interface/` boleh mengimpor `src/middleware/auth`, `src/routes/web/form`, `src/services/users`, dan `src/views/{Layout,format}`.
+> - Boundary test membaca sumber lewat `import.meta.glob(?raw)` karena test berjalan di runtime Workers yang tidak punya `fs`. Karena itu `tsconfig` menambahkan tipe `vite/client`.
+> - Selama R1–R5, facade sementara dikecualikan secara eksplisit di boundary test. Pengecualian itu dihapus di R6.
+> - Jumlah test: 88 → 108, terdiri dari 6 test karakterisasi API, 2 test batas modul, dan 12 unit test use case tanpa D1.
 
 Dokumen ini punya dua bagian yang **dikerjakan terpisah**:
 

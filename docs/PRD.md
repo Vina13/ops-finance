@@ -4,7 +4,7 @@ Status: draf, menunggu review · Pemilik: Ops Finance · Tanggal: 2026-10-22
 
 ## Latar belakang
 
-Saat ini sales bisa mengajukan klaim berapa pun selama nominalnya > 0 dan ≤ `MAX_AMOUNT` (`src/validate.ts`). Finance tidak punya batas pengeluaran per kategori, sehingga kontrol biaya hanya terjadi saat admin menolak klaim satu per satu. Fitur ini menambahkan **plafon bulanan per kategori untuk setiap sales**, yang ditegakkan saat klaim diajukan.
+Saat ini sales bisa mengajukan klaim berapa pun selama nominalnya > 0 dan ≤ `MAX_AMOUNT` (`src/claims/domain/claim.ts`). Finance tidak punya batas pengeluaran per kategori, sehingga kontrol biaya hanya terjadi saat admin menolak klaim satu per satu. Fitur ini menambahkan **plafon bulanan per kategori untuk setiap sales**, yang ditegakkan saat klaim diajukan.
 
 ## Keputusan dari wawancara
 
@@ -136,5 +136,5 @@ Setiap kriteria dites otomatis (Vitest) kecuali yang ditandai *(manual)*. Contoh
   - `claim_limits (category PK, amount)`
   - `claim_limit_overrides (user_id, category, amount, PK(user_id, category))`
   - `claim_limit_changes` (audit)
-- Semua jalur penulisan klaim lewat `src/services/claims.ts` (`createClaim`, `updateClaim`, `transitionClaim`), jadi cek plafon cukup ditulis **di satu tempat**. Lihat `docs/ARCHITECTURE.md`.
+- Semua jalur penulisan klaim lewat use case di `src/claims/application/commands.ts` (`createClaim`, `updateClaim`, `transitionClaim`), jadi cek plafon cukup ditulis **di satu tempat**. Lihat `docs/ARCHITECTURE.md`.
 - Untuk F3, gunakan `INSERT ... SELECT ... WHERE <terpakai> + ? <= <plafon>` dan `UPDATE ... WHERE ... AND <terpakai lain> + ? <= <plafon>`. Hasil `changes() = 0` berarti 409 `limit_exceeded`. SQL tetap memakai `prepare().bind()`.

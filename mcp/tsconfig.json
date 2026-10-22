@@ -5,5 +5,5 @@
     "types": ["node"],
     "allowImportingTsExtensions": false
   },
-  "include": ["server.ts", "../src/validate.ts", "../src/lib/errors.ts"]
+  "include": ["server.ts", "../src/claims/schemas.ts", "../src/lib/errors.ts"]
 }

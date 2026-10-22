@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { AppError } from "../src/lib/errors";
-import { CATEGORIES, validateClaimCreate, validateClaimUpdate, validateListFilters } from "../src/validate";
+import { CATEGORIES, validateClaimCreate, validateClaimUpdate, validateListFilters } from "../src/claims/schemas";
 
 const valid = {
   title: "Taksi ke klien",

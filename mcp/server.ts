@@ -13,7 +13,7 @@ import path from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { CATEGORIES, isoDate, MAX_AMOUNT, STATUSES } from "../src/validate";
+import { CATEGORIES, isoDate, MAX_AMOUNT, STATUSES } from "../src/claims/schemas";
 
 const BASE_URL = (process.env.OPS_FINANCE_URL ?? "http://127.0.0.1:8787").replace(/\/+$/, "");
 const RECEIPT_DIR = process.env.OPS_FINANCE_RECEIPT_DIR ?? process.cwd();

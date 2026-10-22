@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Claim } from "../../src/services/claims";
+import type { Claim } from "../../src/claims";
 import { apiFetch, makeClaim, makeToken, seedUsers, validClaim } from "../helpers";
 
 describe("API klaim /api/claims", () => {

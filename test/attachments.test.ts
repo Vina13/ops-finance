@@ -1,7 +1,6 @@
 import { env } from "cloudflare:workers";
 import { describe, expect, it } from "vitest";
-import { MAX_ATTACHMENT_BYTES, sanitizeFilename } from "../src/services/attachments";
-import type { ClaimAttachment } from "../src/services/claims";
+import { type ClaimAttachment, MAX_ATTACHMENT_BYTES, sanitizeFilename } from "../src/claims";
 import { apiFetch, count, loginCookie, makeClaim, makeToken, pdfFile, seedUsers, webGet, webPost } from "./helpers";
 
 function upload(claimId: string, token: string, file: File) {

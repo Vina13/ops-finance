@@ -1,6 +1,6 @@
 import { env } from "cloudflare:workers";
 import { describe, expect, it } from "vitest";
-import { getClaim } from "../../src/services/claims";
+import { getClaim } from "../../src/claims";
 import { BASE, count, loginCookie, makeClaim, seedUsers, webGet, webPost } from "../helpers";
 
 const form = {

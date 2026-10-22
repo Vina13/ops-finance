@@ -5,7 +5,7 @@ import { createSession, SESSION_COOKIE } from "../src/auth/session";
 import app from "../src/index";
 import { hashPassword } from "../src/lib/crypto";
 import { nowIso } from "../src/lib/ids";
-import { createClaim, type ClaimCreateInput, type TransitionAction, transitionClaim } from "../src/services/claims";
+import { createClaim, type ClaimCreateInput, type TransitionAction, transitionClaim } from "../src/claims";
 import type { Role, Scope, User } from "../src/types";
 
 export const BASE = "https://ops.test";

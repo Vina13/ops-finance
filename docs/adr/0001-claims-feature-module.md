@@ -1,6 +1,6 @@
 # ADR 0001: Modul fitur `src/claims` dengan Clean Architecture di dalamnya
 
-- Status: **Diusulkan**
+- Status: **Diterima**, diimplementasikan di R0–R6 (lihat TRD, catatan penyesuaian)
 - Tanggal: 2026-10-22
 - Terkait: [TRD](../TRD.md), [PRD plafon](../PRD.md), [ARCHITECTURE](../ARCHITECTURE.md)
 

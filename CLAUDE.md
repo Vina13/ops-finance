@@ -11,6 +11,12 @@ Aplikasi klaim biaya Ops Sales (data dummy, untuk lab).
 - Aturan akses ada di API: sales hanya melihat dan membuat klaim miliknya.
 - Approve dan tolak hanya lewat Web App oleh admin. Tidak ada Tool MCP approve.
 - SQL selalu `prepare(...).bind(...)`, jangan menggabung string.
+- Kode klaim ada di modul `src/claims` (Clean Architecture, ADR 0001):
+  - `domain/` murni,
+  - `application/` berisi use case dan port,
+  - `infrastructure/` satu-satunya tempat SQL dan R2,
+  - `interface/` berisi route, view, dan skema.
+- Dari luar modul, impor hanya `src/claims/index.ts` atau `src/claims/schemas.ts`. `test/claims/boundaries.test.ts` gagal kalau aturan ini dilanggar.
 - Token disimpan sebagai hash SHA-256, tidak pernah plaintext.
 
 ## Perintah

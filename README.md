@@ -112,8 +112,14 @@ Tidak ada Tool approve/tolak; keputusan tetap di admin lewat Web App.
 ## Struktur
 
 - `migrations/`: skema D1
-- `src/services/`: aturan bisnis (akses, state machine), dipakai bersama oleh web dan API
-- `src/routes/web/`: halaman Hono JSX (sesi cookie dan CSRF)
-- `src/routes/api/`: API JSON (token Bearer)
+- `src/claims/`: modul klaim (Clean Architecture, lihat `docs/adr/0001-claims-feature-module.md`):
+  - `domain/` aturan murni,
+  - `application/` use case,
+  - `infrastructure/` SQL D1 dan R2,
+  - `interface/` route, view, dan skema.
+- `src/services/users.ts`: user dan login
+- `src/routes/web/`: login, admin user, settings; memasang route web klaim (sesi cookie dan CSRF)
+- `src/routes/api/`: `/api/me`; memasang route API klaim (token Bearer)
+- `docs/`: PRD, TRD, ARCHITECTURE, ADR
 - `src/auth/`: sesi dan token API
 - `test/`: test Vitest

@@ -10,7 +10,7 @@ import {
   listClaims,
   transitionClaim,
   updateClaim,
-} from "../../src/services/claims";
+} from "../../src/claims";
 import { count, insertUser, makeClaim, seedUsers, validClaim } from "../helpers";
 
 async function expectAppError(p: Promise<unknown>, status: number, code?: string) {
