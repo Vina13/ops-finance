@@ -1,133 +1,27 @@
+// Facade sementara (TRD R1–R5): isi domain sudah pindah ke src/claims/domain.
+import type { Actor } from "../claims/domain/actor";
+import { type ClaimAttachment, type ClaimEvent, type Claim, type ClaimStatus, STATUS_LABELS } from "../claims/domain/claim";
+import { canDelete, canEdit, canView } from "../claims/domain/policy";
+import { ACTION_EVENT, TRANSITIONS, type TransitionAction } from "../claims/domain/transitions";
 import { conflict, forbidden, notFound, validation } from "../lib/errors";
 import { newId, nowIso } from "../lib/ids";
-import type { User } from "../types";
-import {
-  type Category,
-  type ClaimStatus,
-  type ListFilters,
-  validateClaimCreate,
-  validateClaimUpdate,
-  validateListFilters,
-} from "../validate";
+import { type ListFilters, validateClaimCreate, validateClaimUpdate, validateListFilters } from "../validate";
 
+export type { Actor } from "../claims/domain/actor";
 export {
   CATEGORIES,
+  CATEGORY_LABELS,
   type Category,
-  type ClaimCreateInput,
+  type Claim,
+  type ClaimAttachment,
+  type ClaimEvent,
   type ClaimStatus,
-  type ClaimUpdateInput,
-  type ListFilters,
+  STATUS_LABELS,
   STATUSES,
-} from "../validate";
-
-export type Actor = Pick<User, "id" | "role">;
-
-export interface Claim {
-  id: string;
-  user_id: string;
-  owner_name: string;
-  owner_email: string;
-  title: string;
-  category: Category;
-  expense_date: string;
-  amount: number;
-  currency: string;
-  description: string;
-  status: ClaimStatus;
-  submitted_at: string | null;
-  decided_by: string | null;
-  decided_at: string | null;
-  decision_note: string | null;
-  paid_at: string | null;
-  created_by: string;
-  created_at: string;
-  updated_at: string;
-  /** Jumlah lampiran/struk; 0 berarti belum ada bukti. */
-  attachment_count: number;
-}
-
-export interface ClaimAttachment {
-  id: string;
-  claim_id: string;
-  filename: string;
-  content_type: string;
-  size_bytes: number;
-  uploaded_by: string;
-  created_at: string;
-}
-
-export interface ClaimEvent {
-  id: string;
-  action: string;
-  from_status: ClaimStatus | null;
-  to_status: ClaimStatus | null;
-  note: string | null;
-  actor_id: string;
-  actor_name: string;
-  created_at: string;
-}
-
-export type TransitionAction = "submit" | "approve" | "reject" | "pay";
-
-const TRANSITIONS: Record<TransitionAction, { from: ClaimStatus; to: ClaimStatus; adminOnly: boolean }> = {
-  submit: { from: "draft", to: "submitted", adminOnly: false },
-  approve: { from: "submitted", to: "approved", adminOnly: true },
-  reject: { from: "submitted", to: "rejected", adminOnly: true },
-  pay: { from: "approved", to: "paid", adminOnly: true },
-};
-
-const ACTION_EVENT: Record<TransitionAction, string> = {
-  submit: "submitted",
-  approve: "approved",
-  reject: "rejected",
-  pay: "paid",
-};
-
-export const STATUS_LABELS: Record<ClaimStatus, string> = {
-  draft: "Draft",
-  submitted: "Diajukan",
-  approved: "Disetujui",
-  rejected: "Ditolak",
-  paid: "Dibayar",
-};
-
-export const CATEGORY_LABELS: Record<Category, string> = {
-  transport: "Transportasi",
-  meal: "Makan",
-  lodging: "Penginapan",
-  entertainment: "Entertainment",
-  other: "Lainnya",
-};
-
-// --- Aturan akses --------------------------------------------------------
-
-export function canView(actor: Actor, claim: Pick<Claim, "user_id">): boolean {
-  return actor.role === "admin" || claim.user_id === actor.id;
-}
-
-export function canEdit(actor: Actor, claim: Pick<Claim, "user_id" | "status">): boolean {
-  if (actor.role === "admin") return claim.status === "draft" || claim.status === "submitted";
-  return claim.user_id === actor.id && claim.status === "draft";
-}
-
-export function canDelete(actor: Actor, claim: Pick<Claim, "user_id" | "status">): boolean {
-  if (actor.role === "admin") return claim.status !== "paid";
-  return claim.user_id === actor.id && claim.status === "draft";
-}
-
-/** Sales boleh menambah struk sampai admin memutuskan (draft atau submitted). */
-export function canAttach(actor: Actor, claim: Pick<Claim, "user_id" | "status">): boolean {
-  if (actor.role === "admin") return claim.status !== "paid";
-  return claim.user_id === actor.id && (claim.status === "draft" || claim.status === "submitted");
-}
-
-export function allowedTransitions(actor: Actor, claim: Pick<Claim, "user_id" | "status">): TransitionAction[] {
-  if (!canView(actor, claim)) return [];
-  return (Object.keys(TRANSITIONS) as TransitionAction[]).filter((action) => {
-    const t = TRANSITIONS[action];
-    return t.from === claim.status && (!t.adminOnly || actor.role === "admin");
-  });
-}
+} from "../claims/domain/claim";
+export { allowedTransitions, canAttach, canDelete, canEdit, canView } from "../claims/domain/policy";
+export type { TransitionAction } from "../claims/domain/transitions";
+export type { ClaimCreateInput, ClaimUpdateInput, ListFilters } from "../validate";
 
 // --- Query -----------------------------------------------------------------
 

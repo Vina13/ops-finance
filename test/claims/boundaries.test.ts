@@ -4,6 +4,8 @@ import { describe, expect, it } from "vitest";
 
 /** Kode di luar modul hanya boleh mengimpor pintu masuk publik ini. */
 const PUBLIC_ENTRIES = ["src/claims/index.ts", "src/claims/schemas.ts"];
+/** Facade sementara selama migrasi (TRD R1–R5) yang boleh mengimpor isi modul. Harus kosong setelah R6. */
+const TRANSITIONAL_FACADES = ["src/services/claims.ts", "src/services/attachments.ts", "src/validate.ts"];
 
 const claimFiles = import.meta.glob<string>("/src/claims/**/*.{ts,tsx}", { query: "?raw", import: "default", eager: true });
 const outsideFiles = import.meta.glob<string>(["/src/**/*.{ts,tsx}", "!/src/claims/**", "/mcp/**/*.ts", "/test/**/*.ts", "!/test/claims/**"], {
@@ -74,6 +76,7 @@ function violations(): string[] {
   }
   for (const [file, source] of Object.entries(outsideFiles)) {
     const path = file.replace(/^\//, "");
+    if (TRANSITIONAL_FACADES.includes(path)) continue;
     for (const spec of importsOf(source)) {
       const target = resolve(path, spec);
       if (target?.startsWith("src/claims/") && !PUBLIC_ENTRIES.includes(`${target}.ts`)) {

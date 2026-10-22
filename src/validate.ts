@@ -1,16 +1,12 @@
 import { z } from "zod";
 import { validation } from "./lib/errors";
 
-// Skema validasi input klaim. Dipakai bersama oleh web, API, dan service;
-// daftar kategori/status di sini harus sama dengan CHECK di migrations/0001_init.sql.
+import { CATEGORIES, MAX_AMOUNT, STATUSES } from "./claims/domain/claim";
 
-export const CATEGORIES = ["transport", "meal", "lodging", "entertainment", "other"] as const;
-export type Category = (typeof CATEGORIES)[number];
+// Skema validasi input klaim. Dipakai bersama oleh web, API, dan service.
+// Daftar kategori/status berasal dari src/claims/domain/claim.ts.
 
-export const STATUSES = ["draft", "submitted", "approved", "rejected", "paid"] as const;
-export type ClaimStatus = (typeof STATUSES)[number];
-
-export const MAX_AMOUNT = 1_000_000_000_000;
+export { CATEGORIES, type Category, type ClaimStatus, MAX_AMOUNT, STATUSES } from "./claims/domain/claim";
 
 export const isoDate = z
   .string()
