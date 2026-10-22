@@ -1,5 +1,6 @@
 // Unit test use case klaim dengan repository in-memory: cepat, tanpa D1/Miniflare (TRD R3).
 import { describe, expect, it } from "vitest";
+import { addAttachment } from "../../src/claims/application/attachments";
 import { createClaim, deleteClaim, transitionClaim, updateClaim } from "../../src/claims/application/commands";
 import type { CreateClaimInput } from "../../src/claims/application/dto";
 import { getClaim, getClaimDetail, listClaims } from "../../src/claims/application/queries";
@@ -121,5 +122,48 @@ describe("use case klaim (in-memory)", () => {
     await deleteClaim(deps, rina, claim.id);
     expect(await codeOf(getClaim(deps, rina, claim.id))).toBe("not_found");
     expect((await listClaims(deps, admin, { limit: 50 })).items).toEqual([]);
+  });
+});
+
+describe("use case lampiran (in-memory)", () => {
+  it("objek di storage dihapus lagi jika metadata gagal disimpan", async () => {
+    const { deps } = inMemoryClaims();
+    const claim = await createClaim(deps, rina, input());
+    const stored = new Map<string, ArrayBuffer>();
+    const attachmentDeps = {
+      ...deps,
+      storage: {
+        put: async (key: string, data: ArrayBuffer) => void stored.set(key, data),
+        get: async () => null,
+        delete: async (key: string) => void stored.delete(key),
+      },
+      attachments: {
+        findById: async () => null,
+        insert: async () => {
+          throw new Error("D1 down");
+        },
+      },
+    };
+    const file = { name: "struk.pdf", type: "application/pdf", size: 3, arrayBuffer: async () => new ArrayBuffer(3) };
+    await expect(addAttachment(attachmentDeps, rina, claim.id, file)).rejects.toThrow("D1 down");
+    expect(stored.size).toBe(0);
+  });
+
+  it("tipe dan ukuran dicek sebelum menyimpan apa pun", async () => {
+    const { deps } = inMemoryClaims();
+    const claim = await createClaim(deps, rina, input());
+    let puts = 0;
+    const attachmentDeps = {
+      ...deps,
+      storage: { put: async () => void puts++, get: async () => null, delete: async () => {} },
+      attachments: { findById: async () => null, insert: async () => {} },
+    };
+    const file = (type: string, size: number) => ({ name: "x", type, size, arrayBuffer: async () => new ArrayBuffer(size) });
+    expect(await codeOf(addAttachment(attachmentDeps, rina, claim.id, file("text/html", 10)))).toBe("unsupported_media_type");
+    expect(await codeOf(addAttachment(attachmentDeps, rina, claim.id, file("image/png", 6 * 1024 * 1024)))).toBe(
+      "payload_too_large",
+    );
+    expect(await codeOf(addAttachment(attachmentDeps, rina, claim.id, file("image/png", 0)))).toBe("validation");
+    expect(puts).toBe(0);
   });
 });

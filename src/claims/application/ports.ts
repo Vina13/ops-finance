@@ -90,3 +90,24 @@ export interface ClaimDeps {
   clock: Clock;
   ids: IdGenerator;
 }
+
+export interface StoredAttachment extends ClaimAttachment {
+  storage_key: string;
+}
+
+export interface AttachmentRepository {
+  findById(id: string): Promise<StoredAttachment | null>;
+  /** Menyimpan metadata lampiran beserta event `attachment_added` secara atomik. */
+  insert(attachment: StoredAttachment, event: NewEvent): Promise<void>;
+}
+
+export interface AttachmentStorage {
+  put(key: string, data: ArrayBuffer, contentType: string): Promise<void>;
+  get(key: string): Promise<ReadableStream | null>;
+  delete(key: string): Promise<void>;
+}
+
+export interface AttachmentDeps extends ClaimDeps {
+  attachments: AttachmentRepository;
+  storage: AttachmentStorage;
+}
