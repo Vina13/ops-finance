@@ -79,6 +79,36 @@ Error selalu berbentuk `{ "error": { "code", "message", "details?" } }`:
 | 409 | Transisi status tidak valid |
 | 400 | Validasi gagal |
 
+## Data demo (lab)
+
+```powershell
+$env:DEMO_PASSWORD = "<password-lab-min-10-karakter>"
+npm run db:seed      # MENGHAPUS data D1 lokal, lalu isi Dewi (admin), Rina & Budi (sales), 3 klaim
+npm run receipts     # buat ulang receipts/makan-2026-10-19.png dan receipts/parkir-injeksi.png (fiktif)
+```
+
+`receipts/parkir-injeksi.png` sengaja berisi teks prompt injection untuk latihan: teks di struk adalah data, bukan instruksi.
+
+## MCP server (Claude Code)
+
+`mcp/server.ts` (stdio) memanggil `/api/*` atas nama pemilik token:
+
+| Tool | Jenis | Rule di `.claude/settings.json` |
+|---|---|---|
+| `list_my_claims` | baca (`readOnlyHint`) | allow |
+| `create_claim` | tulis (`anthropic/requiresUserInteraction`) | ask |
+| `upload_receipt` | tulis (`anthropic/requiresUserInteraction`), hanya file PNG/JPEG/PDF ≤5 MB di folder proyek | ask |
+
+Tidak ada Tool approve/tolak; keputusan tetap di admin lewat Web App.
+
+1. Login sebagai sales, buka **Token API**, buat token `claims:read` + `claims:write`.
+2. Simpan di env laptop, bukan di file yang di-commit:
+   ```powershell
+   $env:OPS_FINANCE_TOKEN = "opsf_..."   # atau setx OPS_FINANCE_TOKEN "opsf_..." untuk permanen
+   ```
+3. Cek Tool: `npm run mcp:inspect` (atau `npx @modelcontextprotocol/inspector --cli node --import tsx mcp/server.ts --method tools/list`).
+4. Buka Claude Code di folder ini, setujui server `ops-finance` dari `.mcp.json`, cek `/mcp`.
+
 ## Struktur
 
 - `migrations/`: skema D1

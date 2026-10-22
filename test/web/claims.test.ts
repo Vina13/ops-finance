@@ -84,7 +84,7 @@ describe("web: alur klaim", () => {
     const salesSubmitted = await (await webGet(`/claims/${submitted.id}`, salesCookie)).text();
     expect(salesSubmitted).not.toContain(`/claims/${submitted.id}/edit`);
     expect(salesSubmitted).not.toContain("/approve");
-    expect(salesSubmitted).not.toContain(`/claims/${submitted.id}/attachments`);
+    expect(salesSubmitted).toContain(`/claims/${submitted.id}/attachments`);
 
     const adminSubmitted = await (await webGet(`/claims/${submitted.id}`, adminCookie)).text();
     expect(adminSubmitted).toContain(`/claims/${submitted.id}/approve`);

@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "ops-finance": {
+      "command": "node",
+      "args": ["--import", "tsx", "mcp/server.ts"],
+      "env": {
+        "OPS_FINANCE_URL": "http://127.0.0.1:8787",
+        "OPS_FINANCE_TOKEN": "${OPS_FINANCE_TOKEN}"
+      }
+    }
+  }
+}

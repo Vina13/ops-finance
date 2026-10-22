@@ -15,9 +15,15 @@ import { readForm, str } from "./form";
 
 export const authRoutes = new Hono<AppEnv>();
 
-/** Hanya path lokal yang boleh jadi tujuan redirect setelah login. */
-function safeNext(next: string | undefined): string {
-  return next && next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/\\") ? next : "/claims";
+/**
+ * Hanya path lokal yang boleh jadi tujuan redirect setelah login. Karakter kontrol/spasi/backslash
+ * ditolak karena browser membuang tab/newline saat parsing ("/\t/evil.com" menjadi "//evil.com").
+ */
+export function safeNext(next: string | undefined): string {
+  if (!next || !next.startsWith("/") || /[\x00-\x20\\]/.test(next)) return "/claims";
+  const base = "http://local.invalid";
+  const url = new URL(next, base);
+  return url.origin === base ? `${url.pathname}${url.search}` : "/claims";
 }
 
 authRoutes.get("/login", async (c) => {

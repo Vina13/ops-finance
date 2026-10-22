@@ -95,13 +95,14 @@ export const ClaimListPage: FC<{
               {isAdmin && <th>Sales</th>}
               <th>Kategori</th>
               <th class="num">Nominal</th>
+              <th>Struk</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody>
             {claims.length === 0 && (
               <tr>
-                <td colspan={isAdmin ? 6 : 5} class="muted">
+                <td colspan={isAdmin ? 7 : 6} class="muted">
                   Belum ada klaim.
                 </td>
               </tr>
@@ -115,6 +116,7 @@ export const ClaimListPage: FC<{
                 {isAdmin && <td>{c.owner_name}</td>}
                 <td>{CATEGORY_LABELS[c.category]}</td>
                 <td class="num">{formatRupiah(c.amount)}</td>
+                <td>{c.attachment_count > 0 ? "ada" : <span class="muted">belum</span>}</td>
                 <td>
                   <StatusBadge status={c.status} />
                 </td>

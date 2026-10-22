@@ -8,18 +8,27 @@
     "deploy": "wrangler deploy",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p mcp",
     "db:migrate:local": "wrangler d1 migrations apply ops-finance --local",
     "db:migrate:remote": "wrangler d1 migrations apply ops-finance --remote",
-    "create-admin": "node scripts/create-admin.mjs"
+    "create-admin": "node scripts/create-admin.mjs",
+    "db:migrate": "wrangler d1 migrations apply ops-finance --local",
+    "db:seed": "node scripts/seed-demo.mjs",
+    "receipts": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/make-receipts.ps1",
+    "mcp": "node --import tsx mcp/server.ts",
+    "mcp:inspect": "mcp-inspector --cli node --import tsx mcp/server.ts --method tools/list"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1",
     "hono": "^4.13.13",
     "zod": "^4.6.7"
   },
   "devDependencies": {
     "@cloudflare/vitest-plugin": "^1.4.6",
     "@cloudflare/workers-types": "^5.20261021.1",
+    "@modelcontextprotocol/inspector": "^2.12.0",
+    "@types/node": "^24.19.2",
+    "tsx": "^4.23.15",
     "typescript": "^5.9.3",
     "vitest": "^4.1.12",
     "wrangler": "^4.151.3"

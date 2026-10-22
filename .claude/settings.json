@@ -27,7 +27,12 @@
       "PowerShell(npx vitest *)",
       "PowerShell(git status*)",
       "PowerShell(git diff*)",
-      "PowerShell(git log*)"
+      "PowerShell(git log*)",
+      "Bash(npm run db:migrate)",
+      "Bash(npm run mcp:inspect)",
+      "PowerShell(npm run db:migrate)",
+      "PowerShell(npm run mcp:inspect)",
+      "mcp__ops-finance__list_my_claims"
     ],
     "ask": [
       "Bash(git commit*)",
@@ -52,7 +57,11 @@
       "PowerShell(npm run deploy*)",
       "PowerShell(npx wrangler deploy*)",
       "PowerShell(npx wrangler *--remote*)",
-      "Edit(migrations/0001_init.sql)"
+      "Edit(migrations/0001_init.sql)",
+      "mcp__ops-finance__create_claim",
+      "mcp__ops-finance__upload_receipt",
+      "Bash(npm run db:seed*)",
+      "PowerShell(npm run db:seed*)"
     ],
     "deny": [
       "Read(.dev.vars)",

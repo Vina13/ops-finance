@@ -76,11 +76,26 @@ describe("lampiran R2", () => {
     expect((await apiFetch(`/claims/${c2.id}/attachments/${att.id}`, token)).status).toBe(404);
   });
 
-  it("sales tidak bisa menambah lampiran ke klaim yang sudah diajukan (409); admin bisa", async () => {
+  it("sales bisa menambah struk ke klaim submitted, tapi tidak setelah diputuskan (409); admin bisa", async () => {
     const { admin, salesA } = await seedUsers();
-    const claim = await makeClaim(salesA, admin, ["submit"]);
-    expect((await upload(claim.id, await makeToken(salesA), pdfFile())).status).toBe(409);
-    expect((await upload(claim.id, await makeToken(admin), pdfFile())).status).toBe(201);
+    const salesToken = await makeToken(salesA);
+    const submitted = await makeClaim(salesA, admin, ["submit"]);
+    expect((await upload(submitted.id, salesToken, pdfFile())).status).toBe(201);
+    const approved = await makeClaim(salesA, admin, ["submit", "approve"]);
+    expect((await upload(approved.id, salesToken, pdfFile())).status).toBe(409);
+    expect((await upload(approved.id, await makeToken(admin), pdfFile())).status).toBe(201);
+  });
+
+  it("daftar klaim menghitung jumlah struk", async () => {
+    const { admin, salesA } = await seedUsers();
+    const token = await makeToken(salesA);
+    const withReceipt = await makeClaim(salesA, admin, ["submit"]);
+    await makeClaim(salesA, admin, ["submit"]);
+    await upload(withReceipt.id, token, pdfFile());
+    const list = (await (await apiFetch("/claims", token)).json()) as { items: { id: string; attachment_count: number }[] };
+    const counts = Object.fromEntries(list.items.map((c) => [c.id, c.attachment_count]));
+    expect(counts[withReceipt.id]).toBe(1);
+    expect(Object.values(counts).sort()).toEqual([0, 1]);
   });
 
   it("upload lewat form web", async () => {

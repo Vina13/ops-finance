@@ -35,8 +35,12 @@ describe("login web", () => {
     await seedUsers();
     const ok = await webPost("/login", undefined, { email: "admin@ops.test", password: PASSWORD, next: "/admin/users" });
     expect(ok.headers.get("Location")).toBe("/admin/users");
-    const evil = await webPost("/login", undefined, { email: "admin@ops.test", password: PASSWORD, next: "//evil.example" });
-    expect(evil.headers.get("Location")).toBe("/claims");
+    for (const next of ["//evil.example", "/\t/evil.example", "/\\evil.example", "/%0a/evil.example".replace("%0a", "\n"), "https://evil.example"]) {
+      const evil = await webPost("/login", undefined, { email: "admin@ops.test", password: PASSWORD, next });
+      expect(evil.headers.get("Location"), JSON.stringify(next)).toBe("/claims");
+    }
+    const withQuery = await webPost("/login", undefined, { email: "admin@ops.test", password: PASSWORD, next: "/claims?status=submitted" });
+    expect(withQuery.headers.get("Location")).toBe("/claims?status=submitted");
   });
 
   it("password salah ditolak tanpa cookie", async () => {

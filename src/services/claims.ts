@@ -42,6 +42,8 @@ export interface Claim {
   created_by: string;
   created_at: string;
   updated_at: string;
+  /** Jumlah lampiran/struk; 0 berarti belum ada bukti. */
+  attachment_count: number;
 }
 
 export interface ClaimAttachment {
@@ -113,9 +115,10 @@ export function canDelete(actor: Actor, claim: Pick<Claim, "user_id" | "status">
   return claim.user_id === actor.id && claim.status === "draft";
 }
 
+/** Sales boleh menambah struk sampai admin memutuskan (draft atau submitted). */
 export function canAttach(actor: Actor, claim: Pick<Claim, "user_id" | "status">): boolean {
   if (actor.role === "admin") return claim.status !== "paid";
-  return claim.user_id === actor.id && claim.status === "draft";
+  return claim.user_id === actor.id && (claim.status === "draft" || claim.status === "submitted");
 }
 
 export function allowedTransitions(actor: Actor, claim: Pick<Claim, "user_id" | "status">): TransitionAction[] {
@@ -131,7 +134,8 @@ export function allowedTransitions(actor: Actor, claim: Pick<Claim, "user_id" | 
 const CLAIM_SELECT = `
   SELECT c.id, c.user_id, u.name AS owner_name, u.email AS owner_email, c.title, c.category,
          c.expense_date, c.amount, c.currency, c.description, c.status, c.submitted_at,
-         c.decided_by, c.decided_at, c.decision_note, c.paid_at, c.created_by, c.created_at, c.updated_at
+         c.decided_by, c.decided_at, c.decision_note, c.paid_at, c.created_by, c.created_at, c.updated_at,
+         (SELECT COUNT(*) FROM claim_attachments a WHERE a.claim_id = c.id) AS attachment_count
   FROM claims c JOIN users u ON u.id = c.user_id`;
 
 function encodeCursor(claim: Pick<Claim, "created_at" | "id">): string {
